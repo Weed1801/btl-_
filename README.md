@@ -321,9 +321,7 @@ createdb -U postgres quan_ly_cho_thue_phong_tro
 - [ ] Mobile app
 - [ ] Analytics dashboard
 
-## Tác giả
 
-**TS. Thái Thanh Tùng**
 
 ## Ngày tạo
 
