@@ -24,6 +24,12 @@ namespace QuanLyChoThuePhongTro.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(string username, string email, string password, string fullName, string role = "Tenant")
         {
+            // Security: Prevent users from registering as Admin
+            if (role != "Tenant" && role != "Landlord")
+            {
+                role = "Tenant";
+            }
+
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
                 ModelState.AddModelError("", "All fields are required");
@@ -78,7 +84,6 @@ namespace QuanLyChoThuePhongTro.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

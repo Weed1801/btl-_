@@ -56,6 +56,9 @@ if errorlevel 1 (
     echo ✓ PostgreSQL kết nối được
 )
 
+REM Kill existing process if running to prevent file lock errors
+taskkill /F /IM QuanLyChoThuePhongTro.exe >nul 2>&1
+
 REM Build project
 echo.
 echo [5/5] Build project...

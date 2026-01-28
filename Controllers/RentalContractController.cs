@@ -98,7 +98,7 @@ namespace QuanLyChoThuePhongTro.Controllers
             }
 
             contract.Status = "Pending";
-            contract.CreatedDate = System.DateTime.Now;
+            contract.CreatedDate = System.DateTime.UtcNow;
 
             await _contractRepository.AddAsync(contract);
 
@@ -139,7 +139,7 @@ namespace QuanLyChoThuePhongTro.Controllers
                 return Forbid();
             }
 
-            contract.UpdatedDate = System.DateTime.Now;
+            contract.UpdatedDate = System.DateTime.UtcNow;
             await _contractRepository.UpdateAsync(contract);
 
             return RedirectToAction(nameof(Index));

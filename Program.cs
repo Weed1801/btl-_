@@ -60,8 +60,51 @@ app.MapRazorPages();
 // Create database and apply migrations
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate();
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<ApplicationDbContext>();
+    await dbContext.Database.MigrateAsync();
+
+    // Seed Admin User
+    try 
+    {
+        var authService = services.GetRequiredService<IAuthenticationService>();
+        
+        // Check if admin user exists by username
+        var existingAdmin = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == "admin");
+        
+        if (existingAdmin == null)
+        {
+            // Create new admin user
+            var adminUser = await authService.RegisterAsync("admin", "admin@example.com", "admin123", "Administrator", "Admin");
+            if (adminUser != null)
+            {
+                Console.WriteLine("Admin user created successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Failed to create admin user (RegisterAsync returned null).");
+            }
+        }
+        else if (existingAdmin.Role != "Admin")
+        {
+            // Promote existing user to admin
+            existingAdmin.Role = "Admin";
+            await dbContext.SaveChangesAsync();
+            Console.WriteLine("Existing 'admin' user promoted to Admin role.");
+        }
+        else
+        {
+            Console.WriteLine("Admin user already exists.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error seeding admin user: {ex.Message}");
+        if (ex.InnerException != null)
+        {
+            Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+        }
+    }
 }
 
-app.Run();
+await app.RunAsync();

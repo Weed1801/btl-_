@@ -56,6 +56,9 @@ else
     fi
 fi
 
+# Kill existing process if running
+pkill -f QuanLyChoThuePhongTro > /dev/null 2>&1
+
 # Build project
 echo ""
 echo "[5/5] Build project..."

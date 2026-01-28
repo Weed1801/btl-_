@@ -78,7 +78,7 @@ namespace QuanLyChoThuePhongTro.Controllers
             }
 
             room.OwnerId = userId.Value;
-            room.CreatedDate = System.DateTime.Now;
+            room.CreatedDate = System.DateTime.UtcNow;
 
             await _roomService.AddRoomAsync(room);
             return RedirectToAction(nameof(Index));
@@ -118,7 +118,7 @@ namespace QuanLyChoThuePhongTro.Controllers
                 return Forbid();
             }
 
-            room.UpdatedDate = System.DateTime.Now;
+            room.UpdatedDate = System.DateTime.UtcNow;
             await _roomService.UpdateRoomAsync(room);
             return RedirectToAction(nameof(Index));
         }
