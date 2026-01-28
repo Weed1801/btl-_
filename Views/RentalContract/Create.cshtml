@@ -1,0 +1,52 @@
+@model QuanLyChoThuePhongTro.Models.RentalContract
+
+@{
+    ViewData["Title"] = "Tạo hợp đồng mới";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Đăng Ký Thuê Phòng</h2>
+<hr />
+
+<form asp-action="Create" method="post">
+    <input type="hidden" name="roomId" value="@Model.RoomId" />
+    <input type="hidden" name="tenantId" value="@Model.TenantId" />
+    <input type="hidden" name="landlordId" value="@Model.LandlordId" />
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="mb-3">
+                <label for="monthlyPrice" class="form-label">Giá hàng tháng (VNĐ):</label>
+                <input type="number" class="form-control" id="monthlyPrice" name="monthlyPrice" value="@Model.MonthlyPrice" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="deposit" class="form-label">Tiền cọc (VNĐ):</label>
+                <input type="number" class="form-control" id="deposit" name="deposit" value="@Model.Deposit" />
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Ngày bắt đầu:</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">Ngày kết thúc:</label>
+                        <input type="date" class="form-control" id="endDate" name="endDate" required />
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="termsAndConditions" class="form-label">Điều khoản và điều kiện:</label>
+                <textarea class="form-control" id="termsAndConditions" name="termsAndConditions" rows="6"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Tạo hợp đồng</button>
+            <a href="@Url.Action("Index", "Room")" class="btn btn-secondary">Hủy</a>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,71 @@
+@model QuanLyChoThuePhongTro.Models.RentalContract
+
+@{
+    ViewData["Title"] = "Chi tiết hợp đồng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Chi Tiết Hợp Đồng Thuê Phòng</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <table class="table">
+            <tr>
+                <th>Phòng</th>
+                <td>@Model.Room?.Title</td>
+            </tr>
+            <tr>
+                <th>Người thuê</th>
+                <td>@Model.Tenant?.FullName</td>
+            </tr>
+            <tr>
+                <th>Chủ nhà</th>
+                <td>@Model.Landlord?.FullName</td>
+            </tr>
+            <tr>
+                <th>Giá hàng tháng</th>
+                <td>@Model.MonthlyPrice.ToString("N0") VNĐ</td>
+            </tr>
+            <tr>
+                <th>Tiền cọc</th>
+                <td>@Model.Deposit.ToString("N0") VNĐ</td>
+            </tr>
+            <tr>
+                <th>Từ ngày</th>
+                <td>@Model.StartDate.ToString("dd/MM/yyyy")</td>
+            </tr>
+            <tr>
+                <th>Đến ngày</th>
+                <td>@Model.EndDate.ToString("dd/MM/yyyy")</td>
+            </tr>
+            <tr>
+                <th>Trạng thái</th>
+                <td>
+                    @if (Model.Status == "Active")
+                    {
+                        <span class="badge bg-success">Đang hoạt động</span>
+                    }
+                    else if (Model.Status == "Pending")
+                    {
+                        <span class="badge bg-warning">Chờ xác nhận</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">@Model.Status</span>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <th>Lần thanh toán gần nhất</th>
+                <td>@Model.LastPaymentDate?.ToString("dd/MM/yyyy")</td>
+            </tr>
+        </table>
+
+        <h5>Điều khoản và điều kiện</h5>
+        <p>@Model.TermsAndConditions</p>
+
+        <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">Sửa</a>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+    </div>
+</div>

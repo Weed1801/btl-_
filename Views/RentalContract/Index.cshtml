@@ -1,0 +1,64 @@
+@model IEnumerable<QuanLyChoThuePhongTro.Models.RentalContract>
+
+@{
+    ViewData["Title"] = "Danh sách hợp đồng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Danh Sách Hợp Đồng Thuê Phòng</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Phòng</th>
+            <th>Người thuê</th>
+            <th>Chủ nhà</th>
+            <th>Giá hàng tháng</th>
+            <th>Từ ngày</th>
+            <th>Đến ngày</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var contract in Model)
+        {
+            <tr>
+                <td>@contract.Id</td>
+                <td>@contract.Room?.Title</td>
+                <td>@contract.Tenant?.FullName</td>
+                <td>@contract.Landlord?.FullName</td>
+                <td>@contract.MonthlyPrice.ToString("N0") VNĐ</td>
+                <td>@contract.StartDate.ToString("dd/MM/yyyy")</td>
+                <td>@contract.EndDate.ToString("dd/MM/yyyy")</td>
+                <td>
+                    @if (contract.Status == "Active")
+                    {
+                        <span class="badge bg-success">Đang hoạt động</span>
+                    }
+                    else if (contract.Status == "Pending")
+                    {
+                        <span class="badge bg-warning">Chờ xác nhận</span>
+                    }
+                    else if (contract.Status == "Expired")
+                    {
+                        <span class="badge bg-danger">Hết hạn</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@contract.Status</span>
+                    }
+                </td>
+                <td>
+                    <a href="@Url.Action("Details", new { id = contract.Id })" class="btn btn-sm btn-info">Xem</a>
+                    <a href="@Url.Action("Edit", new { id = contract.Id })" class="btn btn-sm btn-warning">Sửa</a>
+                    @if (ViewBag.UserRole == "Landlord")
+                    {
+                        <a href="@Url.Action("Delete", new { id = contract.Id })" class="btn btn-sm btn-danger">Xóa</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

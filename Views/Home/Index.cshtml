@@ -1,0 +1,39 @@
+@{
+    ViewData["Title"] = "Trang chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Chào mừng đến Quản lý Cho thuê Phòng trọ</h1>
+    <p>Nền tảng quản lý và tìm kiếm phòng trọ trực tuyến</p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Tìm Phòng</h5>
+                <p class="card-text">Tìm kiếm và đặt phòng trọ phù hợp với nhu cầu của bạn.</p>
+                <a href="@Url.Action("Search", "Room")" class="btn btn-primary">Tìm ngay</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Đăng Phòng</h5>
+                <p class="card-text">Đăng ký tài khong chủ nhà và đăng phòng trọ của bạn.</p>
+                <a href="@Url.Action("Register", "Auth")" class="btn btn-primary">Đăng ký</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Quản Lý Hợp Đồng</h5>
+                <p class="card-text">Quản lý hợp đồng thuê phòng và thanh toán dễ dàng.</p>
+                <a href="@Url.Action("Index", "RentalContract")" class="btn btn-primary">Xem hợp đồng</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Tìm kiếm phòng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Tìm Kiếm Phòng Trọ</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form id="searchForm" asp-action="Search" asp-controller="Room" method="post">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Vị trí:</label>
+                        <input type="text" class="form-control" id="location" name="location" placeholder="Nhập vị trí..." />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="minPrice" class="form-label">Giá tối thiểu (VNĐ):</label>
+                        <input type="number" class="form-control" id="minPrice" name="minPrice" placeholder="Tối thiểu" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="maxPrice" class="form-label">Giá tối đa (VNĐ):</label>
+                        <input type="number" class="form-control" id="maxPrice" name="maxPrice" placeholder="Tối đa" />
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </form>
+    </div>
+</div>
+
+<div id="resultsContainer"></div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#searchForm').on('submit', function (e) {
+                e.preventDefault();
+                var location = $('#location').val();
+                var minPrice = $('#minPrice').val();
+                var maxPrice = $('#maxPrice').val();
+
+                $.ajax({
+                    url: '@Url.Action("Search", "Room")',
+                    type: 'POST',
+                    data: {
+                        location: location,
+                        minPrice: minPrice,
+                        maxPrice: maxPrice
+                    },
+                    success: function (data) {
+                        $('#resultsContainer').html(data);
+                    },
+                    error: function () {
+                        alert('Có lỗi xảy ra trong quá trình tìm kiếm');
+                    }
+                });
+            });
+        });
+    </script>
+}

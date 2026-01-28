@@ -1,0 +1,103 @@
+@model QuanLyChoThuePhongTro.Models.Room
+
+@{
+    ViewData["Title"] = "Chi tiết phòng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <h2>@Model.Title</h2>
+        <hr />
+        
+        <h5>Thông tin cơ bản</h5>
+        <table class="table">
+            <tr>
+                <th>Giá thuê</th>
+                <td>@Model.Price.ToString("N0") VNĐ/tháng</td>
+            </tr>
+            <tr>
+                <th>Vị trí</th>
+                <td>@Model.Location, @Model.District, @Model.Ward</td>
+            </tr>
+            <tr>
+                <th>Diện tích</th>
+                <td>@Model.Area m²</td>
+            </tr>
+            <tr>
+                <th>Phòng ngủ</th>
+                <td>@Model.Bedrooms</td>
+            </tr>
+            <tr>
+                <th>Phòng tắm</th>
+                <td>@Model.Bathrooms</td>
+            </tr>
+            <tr>
+                <th>Trạng thái</th>
+                <td>
+                    @if (Model.Status == "Available")
+                    {
+                        <span class="badge bg-success">Có sẵn</span>
+                    }
+                    else if (Model.Status == "Rented")
+                    {
+                        <span class="badge bg-warning">Đã cho thuê</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Bảo trì</span>
+                    }
+                </td>
+            </tr>
+        </table>
+
+        <h5>Tiện ích</h5>
+        <ul>
+            @if (Model.HasKitchen)
+            {
+                <li>Có bếp</li>
+            }
+            @if (Model.HasWiFi)
+            {
+                <li>Có WiFi</li>
+            }
+            @if (Model.HasAirConditioner)
+            {
+                <li>Có điều hòa</li>
+            }
+            @if (Model.HasWashing)
+            {
+                <li>Có máy giặt</li>
+            }
+        </ul>
+
+        <h5>Mô tả</h5>
+        <p>@Model.Description</p>
+
+        @if (Model.Status == "Available" && ViewBag.UserRole == "Tenant")
+        {
+            <a href="@Url.Action("Create", "RentalContract", new { roomId = Model.Id })" class="btn btn-primary btn-lg">Đăng ký thuê</a>
+        }
+
+        @if (ViewBag.UserId == Model.OwnerId && ViewBag.UserRole == "Landlord")
+        {
+            <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">Sửa</a>
+            <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-danger">Xóa</a>
+        }
+
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Thông tin chủ nhà</h5>
+                <p>
+                    <strong>Tên:</strong> @Model.Owner?.FullName<br />
+                    <strong>Email:</strong> @Model.Owner?.Email<br />
+                    <strong>Điện thoại:</strong> @Model.Owner?.PhoneNumber
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
