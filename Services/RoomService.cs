@@ -11,7 +11,7 @@ namespace QuanLyChoThuePhongTro.Services
     {
         Task<IEnumerable<Room>> GetAllRoomsAsync();
         Task<Room?> GetRoomByIdAsync(int id);
-        Task<IEnumerable<Room>> SearchRoomsAsync(string location, decimal? minPrice, decimal? maxPrice);
+        Task<IEnumerable<Room>> SearchRoomsAsync(RoomFilter filter);
         Task<IEnumerable<Room>> GetRoomsByOwnerAsync(int ownerId);
         Task AddRoomAsync(Room room);
         Task UpdateRoomAsync(Room room);
@@ -64,9 +64,9 @@ namespace QuanLyChoThuePhongTro.Services
             return roomFromDb;
         }
 
-        public async Task<IEnumerable<Room>> SearchRoomsAsync(string location, decimal? minPrice, decimal? maxPrice)
+        public async Task<IEnumerable<Room>> SearchRoomsAsync(RoomFilter filter)
         {
-            return await _repository.SearchAsync(location, minPrice, maxPrice);
+            return await _repository.SearchAsync(filter);
         }
 
         public async Task<IEnumerable<Room>> GetRoomsByOwnerAsync(int ownerId)

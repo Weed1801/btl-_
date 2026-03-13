@@ -3,13 +3,53 @@
 @{
     ViewData["Title"] = "Chi tiết phòng";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Xử lý danh sách ảnh
+    var imageList = !string.IsNullOrEmpty(Model.ImageUrls)
+        ? Model.ImageUrls.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
+        : new List<string>();
 }
 
 <div class="row">
     <div class="col-md-8">
         <h2>@Model.Title</h2>
         <hr />
-        
+
+        @* --- Hiển thị ảnh phòng --- *@
+        @if (imageList.Count > 0)
+        {
+            <div class="mb-4">
+                <h5>📷 Ảnh phòng</h5>
+                @* Ảnh lớn đầu tiên *@
+                <div class="mb-2">
+                    <img id="mainImage" src="@imageList[0]" alt="Ảnh phòng"
+                         class="img-fluid rounded shadow"
+                         style="width:100%;max-height:400px;object-fit:cover;cursor:pointer;" />
+                </div>
+                @* Thumbnail các ảnh còn lại *@
+                @if (imageList.Count > 1)
+                {
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var imgUrl in imageList)
+                        {
+                            <img src="@imgUrl" alt="Ảnh phòng"
+                                 class="rounded border thumbnail-img"
+                                 style="width:100px;height:75px;object-fit:cover;cursor:pointer;opacity:0.8;transition:opacity 0.2s;"
+                                 onclick="document.getElementById('mainImage').src=this.src"
+                                 onmouseover="this.style.opacity='1'"
+                                 onmouseout="this.style.opacity='0.8'" />
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="mb-4 p-4 bg-light rounded text-center text-muted">
+                <p class="mb-0">📷 Chưa có ảnh phòng</p>
+            </div>
+        }
+
         <h5>Thông tin cơ bản</h5>
         <table class="table">
             <tr>

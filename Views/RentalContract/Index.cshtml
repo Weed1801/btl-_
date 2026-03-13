@@ -3,9 +3,26 @@
 @{
     ViewData["Title"] = "Danh sách hợp đồng";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var role = ViewBag.UserRole as string;
+    var userId = (int)(ViewBag.UserId ?? 0);
 }
 
 <h2>Danh Sách Hợp Đồng Thuê Phòng</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 
 <table class="table table-striped">
     <thead>
@@ -39,11 +56,15 @@
                     }
                     else if (contract.Status == "Pending")
                     {
-                        <span class="badge bg-warning">Chờ xác nhận</span>
+                        <span class="badge bg-warning text-dark">Chờ xác nhận</span>
                     }
                     else if (contract.Status == "Expired")
                     {
                         <span class="badge bg-danger">Hết hạn</span>
+                    }
+                    else if (contract.Status == "Terminated")
+                    {
+                        <span class="badge bg-secondary">Đã kết thúc</span>
                     }
                     else
                     {
@@ -51,12 +72,56 @@
                     }
                 </td>
                 <td>
-                    <a href="@Url.Action("Details", new { id = contract.Id })" class="btn btn-sm btn-info">Xem</a>
-                    <a href="@Url.Action("Edit", new { id = contract.Id })" class="btn btn-sm btn-warning">Sửa</a>
-                    @if (ViewBag.UserRole == "Landlord")
-                    {
-                        <a href="@Url.Action("Delete", new { id = contract.Id })" class="btn btn-sm btn-danger">Xóa</a>
-                    }
+                    <div class="d-flex gap-1">
+                        <a href="@Url.Action("Details", new { id = contract.Id })" class="btn btn-sm btn-info">Xem</a>
+                        
+                        @* Nút Thanh toán nhanh (Thành công mặc định) *@
+                        @if (contract.Status == "Active" && role == "Tenant")
+                        {
+                            <form method="post" action="@Url.Action("QuickPay", "Payment", new { contractId = contract.Id })" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-success" 
+                                        onclick="return confirm('Bạn có muốn thanh toán ngay số tiền @contract.MonthlyPrice.ToString("N0") VNĐ?')">
+                                    💵 Thanh toán
+                                </button>
+                            </form>
+                        }
+                        else if (contract.Status == "Active")
+                        {
+                            <a href="@Url.Action("ByContract", "Payment", new { contractId = contract.Id })" class="btn btn-sm btn-dark">📋 Lịch sử</a>
+                        }
+
+                        @* Chỉ Landlord sở hữu hợp đồng mới được sửa *@
+                        @if (role == "Landlord" && contract.LandlordId == userId)
+                        {
+                            <a href="@Url.Action("Edit", new { id = contract.Id })" class="btn btn-sm btn-warning">Sửa</a>
+                        }
+
+                        @* Nút Xác nhận / Từ chối: chỉ Landlord + hợp đồng Pending *@
+                        @if (role == "Landlord" && contract.LandlordId == userId && contract.Status == "Pending")
+                        {
+                            <form method="post" action="@Url.Action("Approve", new { id = contract.Id })" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-success"
+                                        onclick="return confirm('Xác nhận chấp thuận hợp đồng này?')">
+                                    ✔ Xác nhận
+                                </button>
+                            </form>
+                            <form method="post" action="@Url.Action("Reject", new { id = contract.Id })" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Bạn có chắc muốn từ chối hợp đồng này?')">
+                                    ✖ Từ chối
+                                </button>
+                            </form>
+                        }
+
+                        @* Chỉ Landlord mới được xóa hợp đồng *@
+                        @if (role == "Landlord" && contract.LandlordId == userId)
+                        {
+                            <a href="@Url.Action("Delete", new { id = contract.Id })" class="btn btn-sm btn-outline-danger">Xóa</a>
+                        }
+                    </div>
                 </td>
             </tr>
         }

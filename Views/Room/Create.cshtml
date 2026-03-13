@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-md-8 offset-md-2">
         <h2>Đăng Phòng Trọ Mới</h2>
-        <form asp-action="Create" method="post">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="title" class="form-label">Tiêu đề:</label>
                 <input type="text" class="form-control" id="title" name="title" required />
@@ -79,8 +79,41 @@
                     <label class="form-check-label" for="hasWashing">Có máy giặt</label>
                 </div>
             </div>
+
+            @* Upload ảnh phòng *@
+            <div class="mb-4">
+                <label class="form-label fw-bold">📷 Ảnh phòng:</label>
+                <input type="file" class="form-control" name="roomImages" id="roomImages"
+                       accept="image/jpeg,image/png,image/gif,image/webp" multiple />
+                <div class="form-text text-muted">Chọn một hoặc nhiều ảnh (jpg, png, gif, webp).</div>
+                <div id="imagePreview" class="d-flex flex-wrap gap-2 mt-2"></div>
+            </div>
+
             <button type="submit" class="btn btn-primary">Đăng phòng</button>
             <a href="@Url.Action("Index")" class="btn btn-secondary">Hủy</a>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById('roomImages').addEventListener('change', function () {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            Array.from(this.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const wrapper = document.createElement('div');
+                    wrapper.style.cssText = 'position:relative;';
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cssText = 'width:120px;height:90px;object-fit:cover;border-radius:8px;border:2px solid #dee2e6;';
+                    img.title = file.name;
+                    wrapper.appendChild(img);
+                    preview.appendChild(wrapper);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    </script>
+}

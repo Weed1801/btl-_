@@ -3,60 +3,129 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Tìm Kiếm Phòng Trọ</h2>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Tìm Kiếm Phòng Trọ</h2>
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">Quay lại danh sách</a>
+    </div>
 
-<div class="card mb-4">
-    <div class="card-body">
-        <form id="searchForm" asp-action="Search" asp-controller="Room" method="post">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label for="location" class="form-label">Vị trí:</label>
-                        <input type="text" class="form-control" id="location" name="location" placeholder="Nhập vị trí..." />
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-search me-2"></i>Bộ lọc tìm kiếm</h5>
+        </div>
+        <div class="card-body">
+            <form id="searchForm">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="SearchQuery" class="form-label">Từ khóa:</label>
+                        <input type="text" class="form-control" id="SearchQuery" name="SearchQuery" placeholder="Tiêu đề, mô tả hoặc địa chỉ..." />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="District" class="form-label">Quận/Huyện:</label>
+                        <input type="text" class="form-control" id="District" name="District" placeholder="Ví dụ: Cầu Giấy" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="Ward" class="form-label">Phường/Xã:</label>
+                        <input type="text" class="form-control" id="Ward" name="Ward" placeholder="Ví dụ: Dịch Vọng" />
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label for="minPrice" class="form-label">Giá tối thiểu (VNĐ):</label>
-                        <input type="number" class="form-control" id="minPrice" name="minPrice" placeholder="Tối thiểu" />
+
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Khoảng giá (VNĐ):</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="MinPrice" name="MinPrice" placeholder="Từ" />
+                            <input type="number" class="form-control" id="MaxPrice" name="MaxPrice" placeholder="Đến" />
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Diện tích (m²):</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="MinArea" name="MinArea" placeholder="Từ" />
+                            <input type="number" class="form-control" id="MaxArea" name="MaxArea" placeholder="Đến" />
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label for="Bedrooms" class="form-label">Số phòng ngủ ít nhất:</label>
+                        <input type="number" class="form-control" id="Bedrooms" name="Bedrooms" min="0" />
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label for="Bathrooms" class="form-label">Số phòng tắm ít nhất:</label>
+                        <input type="number" class="form-control" id="Bathrooms" name="Bathrooms" min="0" />
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label for="Status" class="form-label">Trạng thái:</label>
+                        <select class="form-select" id="Status" name="Status">
+                            <option value="">Tất cả</option>
+                            <option value="Available">Còn trống</option>
+                            <option value="Rented">Đã cho thuê</option>
+                            <option value="Maintenance">Đang bảo trì</option>
+                        </select>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label for="maxPrice" class="form-label">Giá tối đa (VNĐ):</label>
-                        <input type="number" class="form-control" id="maxPrice" name="maxPrice" placeholder="Tối đa" />
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label class="form-label d-block">Tiện ích:</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="HasKitchen" name="HasKitchen" value="true">
+                            <label class="form-check-label" for="HasKitchen">Có bếp</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="HasWiFi" name="HasWiFi" value="true">
+                            <label class="form-check-label" for="HasWiFi">Có WiFi</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="HasAirConditioner" name="HasAirConditioner" value="true">
+                            <label class="form-check-label" for="HasAirConditioner">Có điều hòa</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="HasWashing" name="HasWashing" value="true">
+                            <label class="form-check-label" for="HasWashing">Có máy giặt</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-        </form>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-search me-2"></i>Tìm kiếm ngay
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <hr />
+
+    <div id="resultsContainer">
+        <div class="text-center text-muted py-5">
+            <i class="fas fa-info-circle fa-3x mb-3"></i>
+            <p>Nhập thông tin và nhấn nút Tìm kiếm để xem kết quả.</p>
+        </div>
     </div>
 </div>
-
-<div id="resultsContainer"></div>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
             $('#searchForm').on('submit', function (e) {
                 e.preventDefault();
-                var location = $('#location').val();
-                var minPrice = $('#minPrice').val();
-                var maxPrice = $('#maxPrice').val();
+                
+                // Thu thập tất cả dữ liệu từ form
+                var formData = $(this).serialize();
+
+                // Hiển thị loading
+                $('#resultsContainer').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Đang tìm kiếm...</p></div>');
 
                 $.ajax({
                     url: '@Url.Action("Search", "Room")',
                     type: 'POST',
-                    data: {
-                        location: location,
-                        minPrice: minPrice,
-                        maxPrice: maxPrice
-                    },
+                    data: formData,
                     success: function (data) {
                         $('#resultsContainer').html(data);
                     },
                     error: function () {
-                        alert('Có lỗi xảy ra trong quá trình tìm kiếm');
+                        $('#resultsContainer').html('<div class="alert alert-danger">Có lỗi xảy ra trong quá trình tìm kiếm. Vui lòng thử lại sau.</div>');
                     }
                 });
             });

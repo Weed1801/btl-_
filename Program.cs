@@ -3,7 +3,20 @@ using QuanLyChoThuePhongTro.Data;
 using QuanLyChoThuePhongTro.Repositories;
 using QuanLyChoThuePhongTro.Services;
 
+// Cho phép Npgsql tự xử lý DateTime không có Kind (tránh lỗi 'not a valid timestamp with time zone')
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure form/file upload limits
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 52428800; // 50 MB
+});
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestBodySize = 52428800; // 50 MB
+});
 
 // Add services to the container
 builder.Services.AddControllersWithViews();
@@ -17,6 +30,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Add repositories
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IRentalContractRepository, RentalContractRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Add services
 builder.Services.AddScoped<IRoomService, RoomService>();

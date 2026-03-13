@@ -3,10 +3,17 @@
 @{
     ViewData["Title"] = "Chi tiết hợp đồng";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var role = Context.Session.GetString("Role");
+    var userId = Context.Session.GetInt32("UserId");
 }
 
 <h2>Chi Tiết Hợp Đồng Thuê Phòng</h2>
 <hr />
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
 
 <div class="row">
     <div class="col-md-8">
@@ -48,7 +55,11 @@
                     }
                     else if (Model.Status == "Pending")
                     {
-                        <span class="badge bg-warning">Chờ xác nhận</span>
+                        <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                    }
+                    else if (Model.Status == "Terminated")
+                    {
+                        <span class="badge bg-secondary">Đã kết thúc / Từ chối</span>
                     }
                     else
                     {
@@ -65,7 +76,47 @@
         <h5>Điều khoản và điều kiện</h5>
         <p>@Model.TermsAndConditions</p>
 
-        <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">Sửa</a>
-        <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+        <div class="mt-3 d-flex gap-2">
+            @* Nút Thanh toán *@
+            @if (Model.Status == "Active")
+            {
+                <a href="@Url.Action("ByContract", "Payment", new { contractId = Model.Id })" class="btn btn-dark">📋 Lịch sử thanh toán</a>
+                
+                @if (role == "Tenant")
+                {
+                    <form method="post" action="@Url.Action("QuickPay", "Payment", new { contractId = Model.Id })" style="display:inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-success">💵 Thanh toán ngay</button>
+                    </form>
+                }
+            }
+
+            @* Chỉ Landlord mới được sửa hợp đồng *@
+            @if (role == "Landlord" && Model.LandlordId == userId)
+            {
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">Sửa hợp đồng</a>
+            }
+
+            @* Nút Xác nhận / Từ chối chỉ hiện khi Pending + Landlord *@
+            @if (role == "Landlord" && Model.LandlordId == userId && Model.Status == "Pending")
+            {
+                <form method="post" action="@Url.Action("Approve", new { id = Model.Id })">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-success"
+                            onclick="return confirm('Xác nhận chấp thuận hợp đồng này?')">
+                        ✔ Xác nhận hợp đồng
+                    </button>
+                </form>
+                <form method="post" action="@Url.Action("Reject", new { id = Model.Id })">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger"
+                            onclick="return confirm('Bạn có chắc muốn từ chối hợp đồng này?')">
+                        ✖ Từ chối hợp đồng
+                    </button>
+                </form>
+            }
+
+            <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+        </div>
     </div>
 </div>

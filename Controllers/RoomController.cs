@@ -10,11 +10,40 @@ namespace QuanLyChoThuePhongTro.Controllers
     {
         private readonly IRoomService _roomService;
         private readonly IRoomRepository _roomRepository;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public RoomController(IRoomService roomService, IRoomRepository roomRepository)
+        public RoomController(IRoomService roomService, IRoomRepository roomRepository, IWebHostEnvironment webHostEnvironment)
         {
             _roomService = roomService;
             _roomRepository = roomRepository;
+            _webHostEnvironment = webHostEnvironment;
+        }
+
+        // Helper: lưu danh sách file ảnh và trả về chuỗi đường dẫn cách nhau bởi dấu phẩy
+        private async Task<string?> SaveImagesAsync(IFormFileCollection files)
+        {
+            if (files == null || files.Count == 0) return null;
+
+            var uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "rooms");
+            Directory.CreateDirectory(uploadFolder);
+
+            var savedPaths = new List<string>();
+            foreach (var file in files)
+            {
+                if (file.Length > 0)
+                {
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                    var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+                    if (!allowedExtensions.Contains(ext)) continue;
+
+                    var uniqueName = $"{Guid.NewGuid()}{ext}";
+                    var filePath = Path.Combine(uploadFolder, uniqueName);
+                    using var stream = new FileStream(filePath, FileMode.Create);
+                    await file.CopyToAsync(stream);
+                    savedPaths.Add($"/images/rooms/{uniqueName}");
+                }
+            }
+            return savedPaths.Count > 0 ? string.Join(",", savedPaths) : null;
         }
 
         // GET: Room
@@ -45,9 +74,9 @@ namespace QuanLyChoThuePhongTro.Controllers
 
         // POST: Room/Search
         [HttpPost]
-        public async Task<IActionResult> Search(string location, decimal? minPrice, decimal? maxPrice)
+        public async Task<IActionResult> Search(RoomFilter filter)
         {
-            var rooms = await _roomService.SearchRoomsAsync(location, minPrice, maxPrice);
+            var rooms = await _roomService.SearchRoomsAsync(filter);
             return PartialView("_RoomList", rooms);
         }
 
@@ -68,7 +97,7 @@ namespace QuanLyChoThuePhongTro.Controllers
         // POST: Room/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Room room)
+        public async Task<IActionResult> Create(Room room, IFormFileCollection roomImages)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             
@@ -79,6 +108,13 @@ namespace QuanLyChoThuePhongTro.Controllers
 
             room.OwnerId = userId.Value;
             room.CreatedDate = System.DateTime.UtcNow;
+
+            // Xử lý upload ảnh
+            var savedImages = await SaveImagesAsync(roomImages);
+            if (savedImages != null)
+            {
+                room.ImageUrls = savedImages;
+            }
 
             await _roomService.AddRoomAsync(room);
             return RedirectToAction(nameof(Index));
@@ -105,7 +141,7 @@ namespace QuanLyChoThuePhongTro.Controllers
         // POST: Room/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Room room)
+        public async Task<IActionResult> Edit(int id, Room room, IFormFileCollection roomImages, string? existingImageUrls)
         {
             if (id != room.Id)
             {
@@ -119,6 +155,22 @@ namespace QuanLyChoThuePhongTro.Controllers
             }
 
             room.UpdatedDate = System.DateTime.UtcNow;
+
+            // Xử lý upload ảnh mới
+            var newImages = await SaveImagesAsync(roomImages);
+            if (newImages != null)
+            {
+                // Ghép ảnh mới vào ảnh cũ
+                room.ImageUrls = string.IsNullOrEmpty(existingImageUrls)
+                    ? newImages
+                    : existingImageUrls + "," + newImages;
+            }
+            else
+            {
+                // Giữ nguyên ảnh cũ nếu không upload mới
+                room.ImageUrls = existingImageUrls;
+            }
+
             await _roomService.UpdateRoomAsync(room);
             return RedirectToAction(nameof(Index));
         }

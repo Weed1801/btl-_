@@ -36,13 +36,17 @@ QuanLyChoThuePhongTro/
 ├── Controllers/             # Các controller
 │   ├── AuthController.cs
 │   ├── RoomController.cs
-│   └── RentalContractController.cs
+│   ├── RentalContractController.cs
+│   ├── UserController.cs
+│   └── PaymentController.cs
 ├── Services/               # Business logic
 │   ├── RoomService.cs
 │   └── AuthenticationService.cs
 ├── Repositories/           # Data access
 │   ├── RoomRepository.cs
-│   └── RentalContractRepository.cs
+│   ├── RentalContractRepository.cs
+│   ├── UserRepository.cs
+│   └── PaymentRepository.cs
 ├── Data/                   # Database context
 │   └── ApplicationDbContext.cs
 ├── Views/                  # Razor views
@@ -50,6 +54,8 @@ QuanLyChoThuePhongTro/
 │   ├── Room/
 │   ├── Auth/
 │   ├── RentalContract/
+│   ├── User/
+│   ├── Payment/
 │   └── Shared/
 ├── wwwroot/               # Static files
 │   ├── css/
@@ -280,6 +286,12 @@ createdb -U postgres quan_ly_cho_thue_phong_tro
 - Tìm kiếm phòng theo vị trí, giá cả
 - Caching dữ liệu phòng
 
+### Quản lý Người dùng (Chỉ Admin)
+- Xem danh sách toàn bộ người dùng
+- Chỉnh sửa thông tin người dùng (Vai trò, trạng thái)
+- Xóa người dùng (có xác nhận)
+- Phân quyền người dùng (Admin, Landlord, Tenant)
+
 ### Xác thực & Phân quyền
 - Đăng ký tài khoản
 - Đăng nhập
@@ -292,6 +304,12 @@ createdb -U postgres quan_ly_cho_thue_phong_tro
 - Xem danh sách hợp đồng
 - Cập nhật trạng thái hợp đồng
 - Xóa hợp đồng (chỉ Landlord)
+
+### Quản lý Thanh toán
+- Tạo thanh toán cho hợp đồng (Tenant)
+- Xem lịch sử thanh toán của hợp đồng
+- Thanh toán nhanh (Quick Pay)
+- Xem chi tiết biên lai thanh toán
 
 ### Tìm kiếm & Lọc
 - Tìm kiếm theo vị trí
@@ -313,7 +331,7 @@ createdb -U postgres quan_ly_cho_thue_phong_tro
 
 ## Hướng phát triển
 
-- [ ] Thêm chức năng thanh toán online
+- [x] Thêm chức năng thanh toán online
 - [ ] Tích hợp bản đồ (Google Maps)
 - [ ] Upload hình ảnh phòng
 - [ ] Hệ thống đánh giá & bình luận

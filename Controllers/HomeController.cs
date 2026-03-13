@@ -27,9 +27,16 @@ namespace QuanLyChoThuePhongTro.Controllers
         public async Task<IActionResult> Dashboard()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
+            var userRole = HttpContext.Session.GetString("Role");
+            
             if (!userId.HasValue)
             {
                 return RedirectToAction("Login", "Auth");
+            }
+
+            if (userRole != "Admin" && userRole != "Landlord")
+            {
+                return Forbid();
             }
 
             var rooms = await _roomService.GetAllRoomsAsync();

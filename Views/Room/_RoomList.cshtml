@@ -1,0 +1,55 @@
+@model IEnumerable<QuanLyChoThuePhongTro.Models.Room>
+
+<div class="row mt-4">
+    @if (!Model.Any())
+    {
+        <div class="col-12">
+            <div class="alert alert-info">Không tìm thấy phòng nào phù hợp với yêu cầu của bạn.</div>
+        </div>
+    }
+    else
+    {
+        @foreach (var room in Model)
+        {
+            // Lấy ảnh đại diện đầu tiên
+            var firstImage = !string.IsNullOrEmpty(room.ImageUrls)
+                ? room.ImageUrls.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()
+                : null;
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    @* Ảnh đại diện *@
+                    @if (firstImage != null)
+                    {
+                        <img src="@firstImage" class="card-img-top"
+                             alt="@room.Title"
+                             style="height:200px;object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+                             style="height:200px;">
+                            <span class="text-muted" style="font-size:2rem;">🏠</span>
+                        </div>
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@room.Title</h5>
+                        <p class="card-text">
+                            <strong>Giá:</strong> @room.Price.ToString("N0") VNĐ/tháng<br />
+                            <strong>Vị trí:</strong> @room.Location<br />
+                            <strong>Tiện ích:</strong> 
+                            @if (room.HasWiFi) { <span class="badge bg-secondary">WiFi</span> }
+                            @if (room.HasAirConditioner) { <span class="badge bg-secondary">Điều hòa</span> }
+                            @if (room.HasKitchen) { <span class="badge bg-secondary">Bếp</span> }
+                            <br />
+                            <strong>Diện tích:</strong> @room.Area m²<br />
+                            <strong>Phòng ngủ:</strong> @room.Bedrooms | <strong>Phòng tắm:</strong> @room.Bathrooms<br />
+                            <strong>Trạng thái:</strong> <span class="badge bg-info">@room.Status</span>
+                        </p>
+                        <a href="@Url.Action("Details", "Room", new { id = room.Id })" class="btn btn-sm btn-primary">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

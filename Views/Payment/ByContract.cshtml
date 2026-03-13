@@ -1,0 +1,88 @@
+@model IEnumerable<QuanLyChoThuePhongTro.Models.Payment>
+
+@{
+    ViewData["Title"] = "Lịch sử thanh toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var contract = ViewBag.Contract as QuanLyChoThuePhongTro.Models.RentalContract;
+    var role = ViewBag.UserRole as string;
+}
+
+<h2>Lịch Sử Thanh Toán</h2>
+
+@if (contract != null)
+{
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Hợp đồng #@contract.Id — @contract.Room?.Title</h5>
+            <p class="mb-1">Người thuê: <strong>@contract.Tenant?.FullName</strong></p>
+            <p class="mb-1">Chủ nhà: <strong>@contract.Landlord?.FullName</strong></p>
+            <p class="mb-0">Giá thuê: <strong>@contract.MonthlyPrice.ToString("N0") VNĐ/tháng</strong></p>
+        </div>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (role == "Tenant" && contract?.Status == "Active")
+{
+    <a href="@Url.Action("Create", new { contractId = contract!.Id })" class="btn btn-primary mb-3">
+        + Thêm thanh toán mới
+    </a>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Chưa có lịch sử thanh toán nào.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Ngày thanh toán</th>
+                <th>Số tiền</th>
+                <th>Phương thức</th>
+                <th>Trạng thái</th>
+                <th>Ghi chú</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var payment in Model)
+            {
+                <tr>
+                    <td>@payment.PaymentDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@payment.Amount.ToString("N0") VNĐ</td>
+                    <td>@payment.PaymentMethod</td>
+                    <td>
+                        @if (payment.Status == "Completed")
+                        {
+                            <span class="badge bg-success">Hoàn thành</span>
+                        }
+                        else if (payment.Status == "Pending")
+                        {
+                            <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Thất bại</span>
+                        }
+                    </td>
+                    <td>@payment.Notes</td>
+                    <td>
+                        <a href="@Url.Action("Details", new { id = payment.Id })" class="btn btn-sm btn-info">Xem</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a href="@Url.Action("Index", "RentalContract")" class="btn btn-secondary">← Quay lại hợp đồng</a>
