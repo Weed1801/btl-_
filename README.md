@@ -333,7 +333,7 @@ createdb -U postgres quan_ly_cho_thue_phong_tro
 
 - [x] Thêm chức năng thanh toán online
 - [ ] Tích hợp bản đồ (Google Maps)
-- [ ] Upload hình ảnh phòng
+- [x] Upload hình ảnh phòng
 - [ ] Hệ thống đánh giá & bình luận
 - [ ] Email notifications
 - [ ] Mobile app
